@@ -29,17 +29,14 @@ WITH pivot_data AS (
                     0  --scallop bycatch sub-ACLs. should this be dredge only?
                ELSE livlb
             END AS livlb
-    FROM    (;
---check that fishery groups look good
-    select stock_id, count(*), SUM(livlb)
-        , sum(case when fishery_group IN ('LOBSTER/CRAB','RESEARCH') then 0 else livlb end)/2204.62262 as discard
-    from    (
+    FROM    (
             SELECT l.camsid, l.date_trip, s.permit, apsd.get_gf_fy(l.date_trip) AS fy
-                , s.area, s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, l.common_name AS itis_group1, g.fishery_group
+                , s.area, s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, it.itis_group1, g.fishery_group
                 , apsd.get_stock_id_itis(l.itis_tsn, s.area) AS stock_id
                 , l.cams_discard AS livlb
-            FROM    XCAMS_DISCARD l, XCAMS_SUBTRIP s, XCAMS_FISHERY_GROUP g
+            FROM    XCAMS_DISCARD l, XCAMS_SUBTRIP s, XCAMS_FISHERY_GROUP g, cams_garfo.cfg_itis it
             WHERE   l.camsid = s.camsid
+            and     l.itis_tsn = it.itis_tsn
             and     l.subtrip = s.subtrip
             and     l.camsid = g.camsid
             and     l.subtrip = g.subtrip
@@ -51,11 +48,12 @@ WITH pivot_data AS (
             UNION ALL
         --just append the scallop bycatches
             SELECT l.camsid, l.date_trip, s.permit, apsd.get_scal_fy(l.date_trip) AS scal_fy
-                , s.area, s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, l.common_name AS itis_group1, g.fishery_group
+                , s.area, s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, it.itis_group1, g.fishery_group
                 , apsd.get_stock_id_itis(l.itis_tsn, s.area) AS stock_id,
                 l.cams_discard AS livlb
-            FROM    XCAMS_DISCARD l, XCAMS_SUBTRIP s, XCAMS_FISHERY_GROUP g
+            FROM    XCAMS_DISCARD l, XCAMS_SUBTRIP s, XCAMS_FISHERY_GROUP g, cams_garfo.cfg_itis it
             WHERE   l.camsid = s.camsid
+            and     l.itis_tsn = it.itis_tsn
             AND     l.subtrip = s.subtrip
             AND     l.camsid = g.camsid
             and     l.subtrip = g.subtrip
@@ -65,8 +63,6 @@ WITH pivot_data AS (
                 ,'166774','164727','172746','172933','630979','171341')  --from cfg_itis
             AND     l.cams_discard > 0
 --        )
-    )
-    group by stock_id;
     )
     )
     GROUP BY fy, stock_id, fishery_group

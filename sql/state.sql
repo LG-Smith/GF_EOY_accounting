@@ -1,6 +1,6 @@
 WITH hullids AS (
     SELECT camsid, MAX(hullid) AS hullid
-    FROM    &land
+    FROM    XCAMS_LAND
     WHERE   year >= 2023
     AND     permit = '000000'
     GROUP BY camsid
@@ -27,7 +27,6 @@ Mass_areas AS (
     AND     g.fishery_group = 'STATE'
     AND     l.itis_tsn = '172905'
     GROUP BY l.camsid
---    AND     l.hullid = 'MS1866BS'  --camsid = '000000_652109_0016_060374820408112_230606000000'
 )
 
 --Main
@@ -43,14 +42,8 @@ Mass_areas AS (
     FROM    (
         SELECT camsid, date_trip, permit, hullid, fy
             , area, negear, vtr_mesh, mesh_cat, itis_tsn, itis_group1, fishery_group
-            --due to bad data in FY23. Can clean up
-            , CASE WHEN camsid = '000000_546527_0016_040483521409635_240410000000' AND itis_tsn =  '172873' THEN
-                        'WITGMMA'
-                   ELSE apsd.get_stock_id_itis(itis_tsn, area)
-              END AS stock_id
-            --due to bad data in FY23. Can clean up
+            , apsd.get_stock_id_itis(itis_tsn, area) stock_id
             , livlb, state, source, date_run
---        select count(*)  --92523
         FROM    (
             SELECT l.camsid, l.date_trip, s.permit, l.hullid
                 , apsd.get_gf_fy(l.date_trip) AS fy
@@ -72,12 +65,13 @@ Mass_areas AS (
             SELECT l.camsid, l.date_trip, s.permit, h.hullid
                 , apsd.get_gf_fy(l.date_trip) AS fy
                 , CASE WHEN ma.area IS NULL THEN s.area ELSE ma.area END AS area
-                , s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, l.common_name, g.fishery_group
+                , s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, it.itis_group1, g.fishery_group
                 , l.cams_discard AS livlb, p.state_abb AS state, 'DISCARD' AS source, l.date_run
 --            select * --count(distinct p.state_abb)
             FROM    XCAMS_DISCARD l, XCAMS_SUBTRIP s, XCAMS_FISHERY_GROUP g, hullids h, mass_areas ma
-                , (SELECT DISTINCT state_abb, port_grp FROM cams_garfo.cfg_port) p
+                , (SELECT DISTINCT state_abb, port_grp FROM cams_garfo.cfg_port) p, cams_garfo.cfg_itis it
             where   l.camsid = s.camsid
+            and     l.itis_tsn = it.itis_tsn
             and     l.subtrip = s.subtrip
             and     l.camsid = g.camsid
             and     l.subtrip = g.subtrip
@@ -92,4 +86,4 @@ Mass_areas AS (
         )
     )
     GROUP BY fy, stock_id, fishery_group
-    ORDER BY fy, apsd.get_stock_sort_order_fnc(stock_id);
+    ORDER BY fy, apsd.get_stock_sort_order_fnc(stock_id)
