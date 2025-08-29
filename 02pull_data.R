@@ -89,8 +89,6 @@ scallop <- ROracle::dbGetQuery(conn = conn,
                                                                                    "XCAMS_SUBTRIP" = cams_subtrip,
                                                                                    "XCAMS_FISHERY_GROUP" = cams_fishery_group)))
 
-recreational <- read.csv("FY24_recreational.csv")
-
 othersub_landing <- ROracle::dbGetQuery(conn = conn,
                                         statement = str_replace_all(read_file("sql/othersub_landings.sql"),
                                                                                  c("XSTART_DATE" = start_date,
@@ -150,6 +148,11 @@ US_CA <- ROracle::dbGetQuery(conn = conn, statement = str_replace_all(read_file(
                                                                         "XCAMS_SUBTRIP" = cams_subtrip,
                                                                         "XCAMS_FISHERY_GROUP" = cams_fishery_group)))
 
+
+recreational <- read.csv("FY24_recreational.csv")
+
+
+herring_placeholder <- read.csv("herring_placeholder.csv")
 ####### catch totals
 
 rec_catch <- recreational |>

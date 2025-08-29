@@ -8,3 +8,6 @@ EOY_catch_wb.rds
 states/
 gf_commercial_catch/
 other_sub/
+prev_year/
+herring_placeholder.csv
+
