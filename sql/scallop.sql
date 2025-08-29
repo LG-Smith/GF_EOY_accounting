@@ -40,6 +40,6 @@ FROM (SELECT l.camsid, l.date_trip, s.permit, apsd.get_scal_fy(l.date_trip) AS s
 RIGHT JOIN scal_frame
 ON scal_frame.stock_id = c.stock_id
 AND scal_frame.source = c.source
-WHERE .stock_id IN ('YELGB', 'YELSNE', 'FLDSNEMA', 'FLGMGBSS')
+WHERE scal_frame.stock_id IN ('YELGB', 'YELSNE', 'FLDSNEMA', 'FLGMGBSS')
 group by scal_frame.stock_id, fishery_group, scal_frame.source
-;
+

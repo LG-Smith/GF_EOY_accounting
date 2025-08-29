@@ -1,5 +1,9 @@
 --small mesh YELGB sub-ACL
-    SELECT stock_id, negear, vtr_mesh, mesh_cat, SUM(livlb), COUNT(DISTINCT camsid), 'LAND' source
+    SELECT stock_id
+   -- , negear
+   -- , vtr_mesh
+   -- , mesh_cat
+    , SUM(livlb) LBS, COUNT(DISTINCT permit) permits, 'LAND' source
     FROM    (
         SELECT l.camsid, l.date_trip, s.permit, apsd.get_gf_fy(l.date_trip) AS fy
             , s.area, s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, l.itis_group1, g.fishery_group
@@ -20,7 +24,11 @@
     WHERE   stock_id = 'YELGB'
     GROUP BY stock_id, negear, vtr_mesh, mesh_cat
     UNION ALL
-    SELECT stock_id, negear, vtr_mesh, mesh_cat, SUM(cams_discard), COUNT(DISTINCT camsid), 'DISCARD' source
+    SELECT stock_id
+   -- , negear
+   -- , vtr_mesh
+   -- , mesh_cat
+    , SUM(cams_discard) lbs, COUNT(DISTINCT permit) permits, 'DISCARD' source
     FROM    (
         SELECT l.camsid, l.date_trip, s.permit, apsd.get_gf_fy(l.date_trip) AS fy
             , s.area, s.negear, s.vtr_mesh, s.mesh_cat, l.itis_tsn, 'YELLOWTAIL' AS common_name, g.fishery_group
@@ -39,4 +47,7 @@
         AND     l.cams_discard > 0
     )
     WHERE   stock_id = 'YELGB'
-    GROUP BY stock_id, negear, vtr_mesh, mesh_cat
+    GROUP BY stock_id
+   -- , negear
+   -- , vtr_mesh
+   -- , mesh_cat

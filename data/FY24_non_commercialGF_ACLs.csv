@@ -1,4 +1,4 @@
-STOCK_NAME,rec,Midwater,Scallop,Small_Mesh,State,Other
+STOCK_NAME,REC_ACL,HERRING_ACL,SCALLOP_ACL,SMM_ACL,STATE_ACL,OTHERSUB_ACL
 GB Cod,,,,,43,86
 GOM Cod,192,,,,48,0
 GB Haddock,,131,,,0,0
