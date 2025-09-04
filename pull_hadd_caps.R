@@ -32,7 +32,7 @@ apsd_con <- apsdFuns::roracle_login(key_name = 'apsd', key_service = 'DB01P', sc
 fy = 2024
 report_type = 'YE'
 comments = 'YEAREND'
-report_week = '29-AUG-25'
+report_week = '04-SEP-25'
 
 ## observed trips
 dbExecute(apsd_con, "TRUNCATE TABLE hadd_obdbs_trips")
